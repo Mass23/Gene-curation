@@ -1,6 +1,7 @@
 import glob
 import subprocess
 import statistics
+import os
 from Bio import SeqIO
 
 ##### Functions of the pipeline
@@ -76,29 +77,33 @@ def main():
     with open('gene_curation.csv', 'w') as out:
         out.write('gene\tstatus\tfasta_file\trel_tree_certainty\ttrimmed_length\taln_identity\tstdev_raw_length\n')
 
-        genes_list = glob.glob('*')
-        print(genes_list)
+        files_list = glob.glob('*')
+        genes_list = [i for i in files_list if os.path.isdir(i)]
 
         for gene in genes_list:
             name = str(gene)
 
-            raw_file = glob.glob(gene + '/*RAW*')
-            curated_file = glob.glob(gene + '/*CURATED*')
+            try:
+                raw_file = glob.glob(gene + '/*RAW*')
+                curated_file = glob.glob(gene + '/*CURATED*')
 
-            stdev_prot_raw = Mafft(raw_file, name, 'raw')
-            stdev_prot_curated = Mafft(curated_file, name, 'curated')
+                stdev_prot_raw = Mafft(raw_file, name, 'raw')
+                stdev_prot_curated = Mafft(curated_file, name, 'curated')
 
-            trimmed_length_raw = Trimal(name, 'raw')[0]
-            trimmed_length_curated = Trimal(name, 'curated')[0]
+                trimmed_length_raw = Trimal(name, 'raw')[0]
+                trimmed_length_curated = Trimal(name, 'curated')[0]
 
-            identity_raw = Trimal(name, 'raw')[1]
-            identity_curated = Trimal(name, 'curated')[1]
+                identity_raw = Trimal(name, 'raw')[1]
+                identity_curated = Trimal(name, 'curated')[1]
 
-            tree_certainty_raw = Raxml(name, 'raw')
-            tree_certainty_curated = Raxml(name, 'curated')
+                tree_certainty_raw = Raxml(name, 'raw')
+                tree_certainty_curated = Raxml(name, 'curated')
 
-            out.write('\t'.join[name, 'raw', gene, tree_certainty_raw, trimmed_length_raw, identity_raw, stdev_prot_raw] + '\n')
-            out.write('\t'.join[name, 'curated', gene, tree_certainty_curated, trimmed_length_curated, identity_curated, stdev_prot_curated] + '\n')
+                out.write('\t'.join[name, 'raw', gene, tree_certainty_raw, trimmed_length_raw, identity_raw, stdev_prot_raw] + '\n')
+                out.write('\t'.join[name, 'curated', gene, tree_certainty_curated, trimmed_length_curated, identity_curated, stdev_prot_curated] + '\n')
+
+            except:
+                print(gene, 'failed, lacking raw or curated sequence?')
 
 if __name__== '__main__':
     main()
