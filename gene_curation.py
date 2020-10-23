@@ -84,8 +84,8 @@ def main():
             name = str(gene)
 
             try:
-                raw_file = glob.glob(gene + '/*RAW*')
-                curated_file = glob.glob(gene + '/*CURATED*')
+                raw_file = glob.glob(gene + '/' + gene +  '-*RAW*')
+                curated_file = glob.glob(gene + '/' + gene +  '-*CURATED*')
 
                 stdev_prot_raw = Mafft(raw_file, name, 'raw')
                 stdev_prot_curated = Mafft(curated_file, name, 'curated')
